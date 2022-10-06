@@ -1,72 +1,196 @@
 <!doctype html>
 
 <html>
-    <head>
-        <title>Warfarin Dosing Algorithm</title>
 
-        <link rel=stylesheet href="main.css"></link>
-    </head>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warfarin Dosing Algorithm</title>
+    <link rel=stylesheet href="./static/css/main.css">
+    </link>
+    <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+    </link>
+</head>
 
-    <body>
-        <div id=wrapper>
-            <p>This calculator is intended only for research use.</p>
-
-            <div id=form>
-                <div id=pair1>
-                    <label for=dose1>Current warfarin dose:</label>
-                    <input name=dose1 type=number size=5 />
-                    <label for=inr1>Current INR:</label>
-                    <input name=inr1 type=number />
-                </div>
-                <hr />
-                Prior warfarin doses and INRs (most recent first):
-                <div id=pair2>
-                    <label for=dose2>Warfarin dose:</label>
-                    <input name=dose2 type=number />
-                    <label for=inr2>INR:</label>
-                    <input name=inr2 type=number /><br/ >
-
-                    <label for=split2>Has there been an interruption in warfarin therapy since this INR was recorded?</label>
-                    <input name=split2 type=checkbox />
-                </div>
-                <hr />
-                <div id=pair3>
-                    <label for=dose3>Warfarin dose:</label>
-                    <input name=dose3 type=number />
-                    <label for=inr3>INR:</label>
-                    <input name=inr3 type=number /><br />
-
-                    <label for=split3>Has there been an interruption in warfarin therapy since this INR was recorded?</label>
-                    <input name=split3 type=checkbox />
-                </div>
-                <hr />
-                <div id=pair4>
-                    <label for=dose4>Warfarin dose:</label>
-                    <input name=dose4 type=number />
-                    <label for=inr4>INR:</label>
-                    <input name=inr4 type=number /><br />
-
-                    <label for=split4>Has there been an interruption in warfarin therapy since this INR was recorded?</label>
-                    <input name=split4 type=checkbox />
-                </div>
-                <hr />
-                <div id=pair5>
-                    <label for=dose5>Warfarin dose:</label>
-                    <input name=dose5 type=number />
-                    <label for=inr5>INR:</label>
-                    <input name=inr5 type=number /><br />
-
-                    <label for=split5>Has there been an interruption in warfarin therapy since this INR was recorded?</label>
-                    <input name=split5 type=checkbox />
-                </div>
-                <hr />
-
-                <input name=submit type=button value=Recommend />
-            </div>
-
-            <div id=predictedAction></div>
+<body>
+    <div id=wrapper class="fs-6">
+        <p class="my-4">This calculator is intended only for research use. Read more about our research <a href="https://github.com/hamilton-health-sciences/warfarin">here</a> or check out the source code for this web page, including the underlying neural network weights <a href="https://github.com/hamilton-health-sciences/warfarin_web">here</a>.
+        <div class="card light-grey-background p-3">
+            <strong class="mb-2">Definitions.</strong>
+            <ul class="mb-0">
+                <li>Warfarin doses should be expressed in milligrams per week (mg / wk).</li>
+                <li>An interruption in warfarin therapy is defined as a serious adverse event (e.g. major bleeding,
+                    ischemic or hemorrhagic stroke, hospitalization) that may have resulted in the temporary cessation
+                    of warfarin therapy, or a cessation of warfarin therapy exceeding 1 week for any reason.</li>
+            </ul>
         </div>
+        <div class="error-container mb-4">
+            <span id="general-error" class="error"></span>
+        </div>
+        <form id="calculator-form" onchange="clearErrors()">
+            <div id="pair1" class="mb-4">
+                <div class="d-sm-flex">
+                    <div class="input-group me-4">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text dark-grey-background">Current warfarin dose:</span>
+                        </div>
+                        <input name=dose1 type="number" class="form-control text-center" placeholder="0" min="0"
+                            step="0.5">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text dark-grey-background">Current INR:</span>
+                        </div>
+                        <input name=inr1 type="number" class="form-control text-center" placeholder="0" min="0"
+                            step="0.1">
+                    </div>
+                </div>
+                <div class="error-container">
+                    <span id="pair1-error" class="error"></span>
+                </div>
+            </div>
+            <div class="card border-0">
+                <div class="card-header border dark-grey-background">
+                    Prior warfarin doses and INRs (most recent first):
+                </div>
+                <div class="light-grey-background p-4 border-bottom">
+                    <div id=pair2>
+                        <div class="mb-4">
+                            <div class="d-flex">
+                                <div class="input-group me-4">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Warfarin dose:</span>
+                                    </div>
+                                    <input name=dose2 type="number" class="form-control text-center" min="0" step="0.5"
+                                        placeholder="0">
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">INR:</span>
+                                    </div>
+                                    <input name=inr2 type="number" class="form-control text-center" min="0" step="0.1"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                            <div class="error-container">
+                                <span id="pair2-error" class="error"></span>
+                            </div>
+                        </div>
+                        <label for=split2>Has there been an interruption in warfarin therapy since this INR was
+                            recorded?</label>
+                        <div class="form-check form-switch mt-2">
+                            <input name=split2 class="form-check-input" type="checkbox">
+                            <label class="form-check-label" for="split2">Yes</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="light-grey-background p-4 border-bottom">
+                    <div id=pair3>
+                        <div class="mb-4">
+                            <div class="d-flex">
+                                <div class="input-group me-4">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Warfarin dose:</span>
+                                    </div>
+                                    <input name=dose3 type="number" class="form-control text-center" min="0" step="0.5"
+                                        placeholder="0">
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">INR:</span>
+                                    </div>
+                                    <input name=inr3 type="number" class="form-control text-center" min="0" step="0.1"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                            <div class="error-container">
+                                <span id="pair3-error" class="error"></span>
+                            </div>
+                        </div>
+                        <label for=split3>Has there been an interruption in warfarin therapy since this INR was
+                            recorded?</label>
+                        <div class="form-check form-switch mt-2">
+                            <input name=split3 class="form-check-input" type="checkbox">
+                            <label class="form-check-label" for="split3">Yes</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="light-grey-background p-4 border-bottom">
+                    <div id=pair4>
+                        <div class="mb-4">
+                            <div class="d-flex">
+                                <div class="input-group me-4">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Warfarin dose:</span>
+                                    </div>
+                                    <input name=dose4 type="number" class="form-control text-center" min="0" step="0.5"
+                                        placeholder="0">
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">INR:</span>
+                                    </div>
+                                    <input name=inr4 type="number" class="form-control text-center" min="0" step="0.1"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                            <div class="error-container">
+                                <span id="pair4-error" class="error"></span>
+                            </div>
+                        </div>
+                        <label for=split4>Has there been an interruption in warfarin therapy since this INR was
+                            recorded?</label>
+                        <div class="form-check form-switch mt-2">
+                            <input name=split4 class="form-check-input" type="checkbox">
+                            <label class="form-check-label" for="split4">Yes</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="light-grey-background p-4 border-bottom">
+                    <div id=pair5>
+                        <div class="mb-4">
+                            <div class="d-flex">
+                                <div class="input-group me-4">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">Warfarin dose:</span>
+                                    </div>
+                                    <input name=dose5 type="number" class="form-control text-center" min="0" step="0.5"
+                                        placeholder="0">
+                                </div>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">INR:</span>
+                                    </div>
+                                    <input name=inr5 type="number" class="form-control text-center" min="0" step="0.1"
+                                        placeholder="0">
+                                </div>
+                            </div>
+                            <div class="error-container">
+                                <span id="pair5-error" class="error"></span>
+                            </div>
+                        </div>
+                        <label for=split5>Has there been an interruption in warfarin therapy since this INR was
+                            recorded?</label>
+                        <div class="form-check form-switch mt-2">
+                            <input name=split5 class="form-check-input" type="checkbox">
+                            <label class="form-check-label" for="split5">Yes</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-4 justify-content-end my-4">
+                <button type="reset" class="btn btn-outline-danger text-decoration-none"
+                    onclick="handleReset()">Reset</button>
+                <input name=submit type=button value=Recommend class="btn btn-dark" />
+            </div>
+        </form>
+        <div id="predictedActionContainer" class="card mb-4 p-4 light-grey-background visually-hidden">
+            <div>
+                Recommendation: <span id="predictedAction"></span>
+            </div>
+        </div>
+    </div>
+    <script src="./static/js/bootstrap.min.js"></script>
+    <script src="./static/js/main.js"></script>
+</body>
 
-        <script src="main.js"></script>
-    </body>
 </html>
