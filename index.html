@@ -1,0 +1,72 @@
+<!doctype html>
+
+<html>
+    <head>
+        <title>Warfarin Dosing Algorithm</title>
+
+        <link rel=stylesheet href="main.css"></link>
+    </head>
+
+    <body>
+        <div id=wrapper>
+            <p>This calculator is intended only for research use.</p>
+
+            <div id=form>
+                <div id=pair1>
+                    <label for=dose1>Current warfarin dose:</label>
+                    <input name=dose1 type=number size=5 />
+                    <label for=inr1>Current INR:</label>
+                    <input name=inr1 type=number />
+                </div>
+                <hr />
+                Prior warfarin doses and INRs (most recent first):
+                <div id=pair2>
+                    <label for=dose2>Warfarin dose:</label>
+                    <input name=dose2 type=number />
+                    <label for=inr2>INR:</label>
+                    <input name=inr2 type=number /><br/ >
+
+                    <label for=split2>Has there been an interruption in warfarin therapy since this INR was recorded?</label>
+                    <input name=split2 type=checkbox />
+                </div>
+                <hr />
+                <div id=pair3>
+                    <label for=dose3>Warfarin dose:</label>
+                    <input name=dose3 type=number />
+                    <label for=inr3>INR:</label>
+                    <input name=inr3 type=number /><br />
+
+                    <label for=split3>Has there been an interruption in warfarin therapy since this INR was recorded?</label>
+                    <input name=split3 type=checkbox />
+                </div>
+                <hr />
+                <div id=pair4>
+                    <label for=dose4>Warfarin dose:</label>
+                    <input name=dose4 type=number />
+                    <label for=inr4>INR:</label>
+                    <input name=inr4 type=number /><br />
+
+                    <label for=split4>Has there been an interruption in warfarin therapy since this INR was recorded?</label>
+                    <input name=split4 type=checkbox />
+                </div>
+                <hr />
+                <div id=pair5>
+                    <label for=dose5>Warfarin dose:</label>
+                    <input name=dose5 type=number />
+                    <label for=inr5>INR:</label>
+                    <input name=inr5 type=number /><br />
+
+                    <label for=split5>Has there been an interruption in warfarin therapy since this INR was recorded?</label>
+                    <input name=split5 type=checkbox />
+                </div>
+                <hr />
+
+                <input name=submit type=button value=Recommend />
+            </div>
+
+            <div id=predictedAction></div>
+        </div>
+
+        <script src="main.js"></script>
+    </body>
+</html>
